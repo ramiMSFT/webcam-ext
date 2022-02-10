@@ -16,7 +16,6 @@ namespace webcam {
             if (handler)
                 handler();
         })
-        console.log(currentFrame)
     }
     
     function init() {
