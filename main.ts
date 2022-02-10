@@ -3,9 +3,9 @@ namespace webcam {
     const EVENT_ID = 4567
     const FRAME_EVENT = 1
 
-    const MICROBIT_ID_BUTTON_A = 1
-    const MICROBIT_BUTTON_EVT_CLICK = 3
-    let imageBuffer: Buffer = undefined
+    export const MICROBIT_ID_BUTTON_A = 1
+    export const MICROBIT_BUTTON_EVT_CLICK = 3
+    export let imageBuffer: Buffer = undefined
 
 
     let initialized = false;
@@ -21,17 +21,12 @@ namespace webcam {
             if (handler)
                 handler();
         })
-
-        control.onEvent(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK, function() {
-            currentFrame
-            serial.writeBuffer(imageBuffer)
-        })
-
     }
     
     function init() {
-        if (!initialized)
-            initialized = true;
+        if (initialized) return;
+            
+        initialized = true;
 
         control.simmessages.onReceived(CHANNEL, function (msg: Buffer) {
             // buffer is the encoded image
@@ -40,5 +35,13 @@ namespace webcam {
             control.raiseEvent(EVENT_ID, FRAME_EVENT)
         })
     }
-
 }
+
+webcam.onFrameReceived(function () {
+    let currentFrame = webcam.currentFrame;
+    if (currentFrame) {
+        control.onEvent(webcam.MICROBIT_ID_BUTTON_A, webcam.MICROBIT_BUTTON_EVT_CLICK, function () {
+            serial.writeBuffer(webcam.imageBuffer)
+        })
+    }
+})
